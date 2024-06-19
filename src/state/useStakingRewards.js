@@ -1,161 +1,99 @@
 import {useEffect, useState} from "react"
 import {useAccount, useReadContract} from "wagmi";
-import {mintwarAbi, mintwarAddress} from '../abiConfig'
-import * as time from '../utils/time'
+import {stakingRewardsAbi, stakingRewardsAddress} from '../abiConfig'
 import BigNumber from "bignumber.js";
-import {ethers} from "ethers";
 
 
-
-export function useFairMint (){
+export function useStakingRewards (){
 
     const {address} = useAccount();
     const [refresh, setRefresh] = useState(false);
 
-    const [startTime, setStartTime] = useState(0);
-    const [endTime, setEndTime] = useState(0);
-    const [myPoints, setMyPoints] = useState('0');
-    const [totalPoints, setTotalPoints] = useState('0')
-    const [accountTotalMint, setAccountTotalMint] = useState('0')
-    const [totalFailMints, setTotalFailMints] = useState('0')
-    const [totalSuccessMints, setTotalSuccessMints] = useState('0')
-    const [totalFailValue, setTotalFailValue] = useState('0')
-    const [totalSuccessValue, setTotalSuccessValue] = useState('0')
+    const [startBlock, setStartBlock] = useState(0);
+    const [endBlock, setEndBlock] = useState(0);
+    const [stakeSupply, setStakeSupply] = useState(0);
+    const [pending, setPending] = useState('0')
+    const [userInfo, setUserInfo] = useState(null);
+
 
    
-    const startTimeRes = useReadContract({
-        abi: mintwarAbi,
-        address: mintwarAddress,
-        functionName: 'mintStartAt'
+    const startBlockRes = useReadContract({
+        abi: stakingRewardsAbi,
+        address: stakingRewardsAddress,
+        functionName: 'startBlock'
     })
     useEffect(() => {
-        if(startTimeRes.status === 'success'){
-            setStartTime(time.abiTimeToTimestamp(startTimeRes.data))
-            return ()=>{}
+        if(startBlockRes.status === 'success'){
+            setStartBlock(startBlockRes.data)
         }
-    },[startTimeRes])
+    },[startBlockRes])
 
-    const endTimeRes = useReadContract({
-        abi: mintwarAbi,
-        address: mintwarAddress,
-        functionName: 'mintEndAt'
+    const endBlocksRes = useReadContract({
+        abi: stakingRewardsAbi,
+        address: stakingRewardsAddress,
+        functionName: 'endBlock'
     })
     useEffect(() => {
-        if(endTimeRes.status === 'success'){
-            setEndTime(time.abiTimeToTimestamp(endTimeRes.data))
-            return ()=>{}
+        if(endBlocksRes.status === 'success'){
+            setEndBlock(endBlocksRes.data)
         }
-    },[endTimeRes])
+    },[endBlocksRes])
 
-    const getMyPoints = useReadContract({
-        abi: mintwarAbi,
-        address: mintwarAddress,
-        functionName: 'pointsOf',
-        args: [address]
+    const stakeSupplyRes = useReadContract({
+        abi: stakingRewardsAbi,
+        address: stakingRewardsAbi,
+        functionName: 'stakeSupply'
     })
     useEffect(() => {
-    if (getMyPoints.status === 'success') {
-        let myPointsRes = new BigNumber(getMyPoints.data).toString()
-        setMyPoints(Number(ethers.formatEther(myPointsRes)).toFixed(3))
-    }
-    }, [getMyPoints]); 
+        if(stakeSupplyRes.status === 'success'){
+            setStakeSupply(stakeSupplyRes.data)
+        }
+    },[stakeSupplyRes])
 
-    const getAccountTotalMint = useReadContract({
-        abi: mintwarAbi,
-        address: mintwarAddress,
-        functionName: 'accountTotalMint',
-        args: [address]
-    
+    const pendingRes = useReadContract({
+        abi: stakingRewardsAbi,
+        address: stakingRewardsAbi,
+        functionName: 'pending',
+        args: [0,address]
     })
     useEffect(() => {
-    if (getAccountTotalMint.status === 'success') {
-        let myAccountTotalMint = new BigNumber(getAccountTotalMint.data).toString()
-        setAccountTotalMint(ethers.formatEther(myAccountTotalMint).toString())
+    if (pendingRes.status === 'success') {
+        let pending = new BigNumber(pendingRes.data).toString()
+        setPending(pending)
     }
-    }, [getAccountTotalMint]);
+    }, [pendingRes]);
 
-    const getTotalPoints = useReadContract({
-        abi: mintwarAbi,
-        address: mintwarAddress,
-        functionName: 'totalPoints'
+    const getUserInfo = useReadContract({
+        abi: stakingRewardsAbi,
+        address: stakingRewardsAbi,
+        functionName: 'userInfo',
+        args: [0,address]
     })
     useEffect(() => {
-    if (getTotalPoints.status === 'success') {
-        let getTotalPointsRes = new BigNumber(getTotalPoints.data).toString()
-        setTotalPoints(Number(ethers.formatEther(getTotalPointsRes)).toFixed(3))
-    }
-    }, [getTotalPoints]);
-
-    const getTotalFailMints = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalFailMints'
-    })
-    useEffect(() => {
-    if (getTotalFailMints.status === 'success') {
-        let res = new BigNumber(getTotalFailMints.data).toString()
-        setTotalFailMints(res.toString())
-    }
-    }, [getTotalFailMints]);
-
-    const getTotalSuccessMints = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalSuccessMints'
-    })
-    useEffect(() => {
-    if (getTotalSuccessMints.status === 'success') {
-        let res = new BigNumber(getTotalSuccessMints.data).toString()
-        setTotalSuccessMints(res.toString())
-    }
-    }, [getTotalSuccessMints]);
-
-    const getTotalFailValue = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalFailValue'
-    })
-    useEffect(() => {
-    if (getTotalFailValue.status === 'success') {
-        let res = new BigNumber(getTotalFailValue.data).toString()
-        setTotalFailValue(Number(ethers.formatEther(res)).toFixed(3))
-    }
-    }, [getTotalFailValue]);
-
-    const getTotalSuccessValue = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalSuccessValue'
-    })
-    useEffect(() => {
-    if (getTotalSuccessValue.status === 'success') {
-        let res = new BigNumber(getTotalSuccessValue.data).toString()
-        setTotalSuccessValue(Number(ethers.formatEther(res)).toFixed(3))
-    }
-    }, [getTotalSuccessValue]);
+    if (getUserInfo.status === 'success') {
+        setUserInfo (getUserInfo.data);
+        }
+    }, [getUserInfo]);
 
     useEffect(() => {
-        getMyPoints.refetch();
-        getAccountTotalMint.refetch();
-        getTotalPoints.refetch();
-        getTotalFailMints.refetch();
-        getTotalSuccessMints.refetch();
-        getTotalFailValue.refetch();
-        getTotalSuccessValue.refetch();
-    }, [refresh])
+        if (refresh) {
+            stakeSupplyRes.refetch();
+            pendingRes.refetch();
+            getUserInfo.refetch();
+        }
+    }, [refresh]);
 
 
     return {
-        startTime,
-        endTime,
-        myPoints,
-        accountTotalMint,
-        totalPoints,
-        totalFailMints,
-        totalSuccessMints,
-        totalFailValue,
-        totalSuccessValue,
+        startBlock,
+        endBlock,
+        stakeSupply,
+        pending,
+        userInfo,
         setRefresh
     }
 
 }
+
+
+

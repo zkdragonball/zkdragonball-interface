@@ -4,7 +4,7 @@ import {useFairMint} from '../../state/useFairMint'
 import { useState,useEffect } from "react";
 
 
-const MintNotStartCard =() => {
+const StakingNotStartCard =() => {
   const {startTime} = useFairMint();
   return(
       <div>
@@ -15,7 +15,7 @@ const MintNotStartCard =() => {
 
 }
 
-export default MintNotStartCard;
+export default StakingNotStartCard;
 
 function TimeCard ({startTime}) {
   const [timer, setTimer] = useState(null)
@@ -55,7 +55,7 @@ function TimeCard ({startTime}) {
   return(
     <div className="w-full p-4 space-y-2 rounded-2xl border border-black-200 shadow bg-white">
             <div className="flex flex-col pt-1 text-2xl lilita-one-regular leading-8 text-orange-500">
-                Mint Not Start
+                Staking Not Start
             </div>
             <div className="flex flex-col">
                 <div className='grid grid-cols-2 gap-6'>

@@ -1,13 +1,13 @@
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {useAccount} from "wagmi";
 
-const MintEndCard =() => {
+const StakingEndCard =() => {
     const {address} = useAccount();
     return(
         <>
             <div className="w-full p-4 space-y-2 rounded-2xl border border-black-200 shadow bg-white">
                 <div className="flex flex-col pt-1 text-2xl lilita-one-regular leading-8 text-orange-500">
-                    $BALL Fair Mint End
+                    Staking End
                 </div>
                 <div className="flex flex-col">
                     <div className='grid grid-cols-2 gap-6'>
@@ -28,7 +28,7 @@ const MintEndCard =() => {
 
 }
 
-export default MintEndCard;
+export default StakingEndCard;
 
 
 function InfoItem({title, value}) {

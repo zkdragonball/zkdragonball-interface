@@ -1,7 +1,7 @@
 import {useFairMint} from '../../state/useFairMint'
 import { useState,useEffect } from "react";
 
-const MintInfo = () => {
+const StakingInfo = () => {
     const {myPoints, accountTotalMint, totalPoints} = useFairMint();
     const [claimableBall, setClaimableBall] = useState('0')
     const [myShare, setMyShare] = useState('0')
@@ -22,7 +22,7 @@ const MintInfo = () => {
         <>
             <div className="w-full p-4 space-y-2 rounded-2xl border border-black-200 shadow bg-white">
                 <div className="flex flex-col pt-1 text-2xl lilita-one-regular leading-8 text-orange-500">
-                    My Mint States
+                    My Rewards
                 </div>
                 <div className="flex flex-col">
                     <div className='grid grid-cols-2 gap-6'>
@@ -38,7 +38,7 @@ const MintInfo = () => {
     );
 
 }
-export default MintInfo;
+export default StakingInfo;
 
 function NumberItem({title, num}) {
     return (
