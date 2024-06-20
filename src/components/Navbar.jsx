@@ -17,14 +17,14 @@ const Navbar = () => {
                         {/* 桌面端 Logo */}
                         <div className="hidden sm:flex items-center cursor-pointer flex-shrink-0 w-80">
                             <img src={mobileLogo} className="h-6 sm:h-9" alt="logo" />
-                            <span className="font-bold text-2xl lilita-one-regular leading-8 text-white">DRAGON BALL</span>
+                            <span className="font-bold text-2xl lilita-one-regular leading-8 text-white">ZKDragonBall</span>
                         </div>
                     </Link>    
                 </div>
                 <ul className=' text-white lilita-one-regular leading-8 text-2xl md:flex hidden list-none flex-row justify-between items-center flex-initial'>
                     <li className='mx-4 cursor-pointer'><Link to="/fairMint">FAIR MINT</Link></li>
                     <li className='mx-4 cursor-pointer'><Link to="/bridge">BRIDGE</Link></li>
-                    <li className='mx-4 cursor-pointer'><Link to="/earn">EARN</Link></li>
+                    <li className='mx-4 cursor-pointer'><Link to="/Stake">STAKE</Link></li>
                 </ul>
             </div>
             <div className='flex'>
@@ -45,7 +45,7 @@ const Navbar = () => {
                             </li>
                             <li className='mt-4 cursor-pointer'><Link to="/fairMint">FAIR MINT</Link></li>
                             <li className='mt-4 cursor-pointer'><Link to="/bridge">BRIDGE</Link></li>
-                            <li className='mt-4 cursor-pointer'><Link to="/earn">EARN</Link></li>
+                            <li className='mt-4 cursor-pointer'><Link to="/Stake">STAKE</Link></li>
                         </ul>
                     )}
                 </div>

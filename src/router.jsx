@@ -3,7 +3,7 @@ import Home from './pages/home'
 import ErrorPage from "./pages/error/errorPage";
 import FairMint from "./pages/fairMint";
 import Bridge from "./pages/bridge";
-import Earn from "./pages/earn";
+import Stake from "./pages/stake";
 
 
 const router = createBrowserRouter([
@@ -21,8 +21,8 @@ const router = createBrowserRouter([
         element: <Bridge/>
     },
     {
-        path: "/earn",
-        element: <Earn/>
+        path: "/stake",
+        element: <Stake/>
      }
 ]);
 export default router;

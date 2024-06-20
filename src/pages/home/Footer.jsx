@@ -9,7 +9,7 @@ const Footer = () => {
                     <div>
                         <div className="flex items-center">
                             <img src={mobileLogo} className=" h-6 sm:h-9" alt="logo"/>
-                            <span className= "font-bold text-2xl pl-4 lilita-one-regular leading-8 text-orange-500">DRAGON BALL</span>
+                            <span className= "font-bold text-2xl pl-4 lilita-one-regular leading-8 text-orange-500">ZKDragonBall</span>
                         </div>           
                         <div className="flex mt-4 ml-4 space-x-10 text-gray-600">
                         <a className="hover:opacity-75" href="https://x.com/ZKDragonBall" target="_blank" rel="noreferrer">
@@ -44,7 +44,7 @@ const Footer = () => {
                         <nav className="flex flex-col mt-4 space-y-2 text-sm text-gray-500">
                             <Link to="/fairMint">FAIR MINT</Link>
                             <Link to="/bridge">BRIDGE</Link>
-                            <Link to="/earn">EARN</Link>
+                            <Link to="/Stake">Stake</Link>
                         </nav>
                         </div>
                         

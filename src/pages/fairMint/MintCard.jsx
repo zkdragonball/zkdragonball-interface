@@ -84,7 +84,7 @@ const MintCard =() => {
       return (
         <button
           className={`center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg 
-          ${isButtonDisabled ? 'cursor-not-allowed bg-slate-500 text-grey-200 disabled' : 'bg-blue-700 hover:bg-blue-800 text-white border'}`}
+          ${isButtonDisabled ? 'cursor-not-allowed bg-slate-500 text-grey-200 disabled' : 'bg-blue-400 hover:bg-blue-600 text-white border'}`}
           onClick={handleMintClick}
           disabled={isButtonDisabled}
         >
@@ -96,7 +96,7 @@ const MintCard =() => {
     const Unconnect =() => {
       const {open} = useWeb3Modal()
       return (
-          <button className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-700 hover:bg-blue-800 text-white disabled:bg-grey-100 disabled:text-grey-200 border"
+          <button className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-400 hover:bg-blue-600 text-white disabled:bg-grey-100 disabled:text-grey-200 border"
               onClick={() => open()}>Connect Wallet
           </button>
       );

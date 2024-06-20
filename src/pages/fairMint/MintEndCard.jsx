@@ -51,7 +51,7 @@ function InfoItem({title, value}) {
 
 const Swap =() => {
     return(
-        <button disabled="" className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-700 hover:bg-blue-800 text-white disabled:bg-grey-100 disabled:text-grey-200 border">
+        <button disabled="" className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-400 hover:bg-blue-600 text-white disabled:bg-grey-100 disabled:text-grey-200 border">
             Swap
         </button>
     );
@@ -61,7 +61,7 @@ const Swap =() => {
     const {open} = useWeb3Modal()
     return (
         
-        <button className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-700 hover:bg-blue-800 text-white disabled:bg-grey-100 disabled:text-grey-200 border"
+        <button className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-400 hover:bg-blue-600 text-white disabled:bg-grey-100 disabled:text-grey-200 border"
             onClick={() => open()}>Connect Wallet
         </button>
     );
