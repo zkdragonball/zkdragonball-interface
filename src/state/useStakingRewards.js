@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react"
 import {useAccount, useReadContract} from "wagmi";
-import {stakingRewardsAbi, stakingRewardsAddress} from '../abiConfig'
+import {stakingRewardsAbi, stakingRewardsAddress,ballAbi,ballAddress} from '../abiConfig'
 import {ethers} from "ethers";
 
 
@@ -15,6 +15,7 @@ export function useStakingRewards (){
     const [pending, setPending] = useState(0);
     const [myStake, setMyStake] = useState(0);
     const [apr, setApr] = useState(0);
+    
 
     const startBlockRes = useReadContract({
         abi: stakingRewardsAbi,
@@ -39,13 +40,14 @@ export function useStakingRewards (){
     },[endBlocksRes])
 
     const stakeSupplyRes = useReadContract({
-        abi: stakingRewardsAbi,
-        address: stakingRewardsAddress,
-        functionName: 'stakeSupply'
+        abi: ballAbi,
+        address: ballAddress,
+        functionName: 'balanceOf',
+        args:[stakingRewardsAddress]
     })
     useEffect(() => {
         if(stakeSupplyRes.status === 'success'){
-            setStakeSupply(Number(ethers.formatEther(stakeSupplyRes.data)).toFixed(3) )
+            setStakeSupply(ethers.formatEther(stakeSupplyRes.data))
         }
     },[stakeSupplyRes])
 
@@ -64,23 +66,24 @@ export function useStakingRewards (){
     const getMyStake = useReadContract({
         abi: stakingRewardsAbi,
         address: stakingRewardsAddress,
-        functionName: 'userInfo',
+        functionName: 'deposited',
         args: [0,address]
     })
     useEffect(() => {
         if (getMyStake.status === 'success') {
-            setMyStake(Number(ethers.formatEther(getMyStake.data[0])).toFixed(3));
+            setMyStake(Number(ethers.formatEther(getMyStake.data)).toFixed(3));
         }
     }, [getMyStake]);
 
     const aprRes = useReadContract({
         abi: stakingRewardsAbi,
         address: stakingRewardsAddress,
-        functionName: 'rewardPerBlock'
+        functionName: 'tokenPerBlock',
+        args: [0]
     })
     useEffect(() => {
         if(aprRes.status === 'success'){
-            const apr = Number(ethers.formatEther(aprRes.data))  * 7200 * 365 / stakeSupply * 100;
+            const apr = ethers.formatEther(aprRes.data)  * 7200 * 365 / stakeSupply * 100;
             setApr(apr.toFixed(2))
         }
     },[startBlockRes])

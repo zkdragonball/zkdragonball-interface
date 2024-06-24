@@ -1,10 +1,9 @@
-import { Slider, ConfigProvider,notification} from 'antd';
+import { notification} from 'antd';
 import { useEffect, useState } from 'react';
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {useAccount,useReadContract,useWriteContract} from "wagmi";
+import {useAccount,useWriteContract,useWaitForTransactionReceipt} from "wagmi";
 import { ethers } from 'ethers';
-import {stakingRewardsAbi, stakingRewardsAddress,ballAbi,ballAddress} from '../../abiConfig';
-import {useBall} from '../../state/useBall';
+import {stakingRewardsAbi, stakingRewardsAddress} from '../../abiConfig';
 import { useStakingRewards } from '../../state/useStakingRewards';
 
 
@@ -14,53 +13,80 @@ const UnStakeCard =() => {
     const {writeContractAsync} = useWriteContract()  
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [inputValue, setInputValue] = useState('');
+    const [callWithdraw, setCallWithdraw] = useState(false);
+    const [hashWithdraw, setHashWithdraw] = useState('');
+
     const handleMaxClick = () => {
         setInputValue(myStake);
     };
 
-    
+    const {isSuccess: isConfirmedWithdraw } =
+      useWaitForTransactionReceipt({
+      hash: hashWithdraw,
+    });
+
+    useEffect(() => {
+      console.log("use effectcall callWithdraw:",callWithdraw);
+      if (callWithdraw) {
+        withdraw(inputValue.toString());
+        setCallWithdraw(false);
+      } 
+    }, [callWithdraw]);
+
+    const withdraw = async(value) => {
+      const param = {
+      abi: stakingRewardsAbi,
+      address: stakingRewardsAddress,
+      functionName: 'withdraw',
+      args: [0, ethers.parseEther(value)]
+      };
+      try {
+        const withdrawTx = await writeContractAsync(param);
+        console.log('Withdraw transaction sent:', withdrawTx);
+        setHashWithdraw(withdrawTx);  
+      } catch (err) {
+        console.log('err', err);
+        setIsButtonDisabled(false);      
+        throw err; 
+      }
+    }
+
+    useEffect(() => {
+      console.log("inside the use effect isConfirmedWithdraw:",isConfirmedWithdraw);
+      if (isConfirmedWithdraw) {
+        setIsButtonDisabled(false);
+        try{
+          notification.open({
+            message:  'Congratulations',
+            placement: 'top',
+            description: 'Unstaking success',
+            onClick: () => {},
+          });
+        } catch (e) {
+          console.error(e);
+        }      
+      } 
+    }, [isConfirmedWithdraw]);
+
     const UnStake = () => {
+
       const handleUnStakeClick = async () => {
-        console.log('begin');
         setIsButtonDisabled(true);
         try {
           await handleUnStake();
-          console.log('Stake completed');
         } catch (error) {
-          console.error('Stake failed', error);
-        } finally{
-          setIsButtonDisabled(false);
-        } 
+          console.error('UnStake failed', error);
+          setIsButtonDisabled(false);   
+        }
       };
     
       const handleUnStake = async () => {
         const amountToUnStake = inputValue.toString();
         console.log("amountToUnStake", amountToUnStake);
-
-        try {
-          await withdraw(amountToUnStake);
-          console.log('withdraw completed');
-        } catch (error) {
-          console.error('withdraw failed', error);
+        if(Number(myStake) >= Number(amountToUnStake)){
+          setCallWithdraw(true);
         }
-        
       }; 
-
-      const withdraw = async(value) => {
-        const param = {
-        abi: stakingRewardsAbi,
-        address: stakingRewardsAddress,
-        functionName: 'withdraw',
-        args: [0, ethers.parseEther(value)]
-        };
-        try {
-            const res = await writeContractAsync(param);
-            console.log('result', res);
-        } catch (err) {
-            console.log('err', err);
-            throw err; 
-        }
-      }
 
       return (
         <button
@@ -85,7 +111,6 @@ const UnStakeCard =() => {
     
     return(
         <>
-      
           <div className="flex flex-col">
               <div className="flex flex-col border border-grey-200 rounded-lg">
                   <h1 className="text-xs text-grey-400 px-3 pt-3">Amount</h1>
@@ -121,9 +146,7 @@ const UnStakeCard =() => {
 
         </>
     );
-
 }
-
 export default UnStakeCard;
 
 

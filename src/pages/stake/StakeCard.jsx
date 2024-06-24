@@ -1,97 +1,143 @@
-import { Slider, ConfigProvider,notification} from 'antd';
 import { useEffect, useState } from 'react';
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {useAccount,useReadContract,useWriteContract} from "wagmi";
+import {useAccount,useWriteContract,useWaitForTransactionReceipt} from "wagmi";
 import { ethers } from 'ethers';
 import {stakingRewardsAbi, stakingRewardsAddress,ballAbi,ballAddress} from '../../abiConfig';
-import {useBall} from '../../state/useBall'
+import {useBall} from '../../state/useBall';
+import { notification } from "antd";
 
 
 const StakeCard =() => {
+   
     const {ballBalance,userAllowance} = useBall();
-    const [tab, setTab] = useState('stake'); // 'stake' or 'unstake'
     const {address} = useAccount();
     const {writeContractAsync} = useWriteContract()  
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [inputValue, setInputValue] = useState('');
+    const [hashApprove, setHashApprove] = useState('');
+    const [hashDeposit, setHashDeposit] = useState('');
+    const [callApprove, setCallApprove] = useState(false);
+    const [callDeposit, setCallDeposit] = useState(false);
+
+
     const handleMaxClick = () => {
         setInputValue(ballBalance);
     };
-    
+
+    const {isSuccess: isConfirmedApprove } =
+      useWaitForTransactionReceipt({
+      hash: hashApprove,
+    });
+
+    const {isSuccess: isConfirmedDeposit } =
+      useWaitForTransactionReceipt({
+      hash: hashDeposit,
+    });
+
+    const approve = async (value) => {
+      const param = {
+        abi: ballAbi,
+        address: ballAddress,
+        functionName: 'approve',
+        args: [stakingRewardsAddress, ethers.parseEther(value).toString()]
+      };
+      try {
+        let approveTx = await writeContractAsync(param);
+        console.log('Approve transaction sent:', approveTx);
+        setHashApprove(approveTx);        
+      } catch (err) {
+        console.log('err', err);
+        throw err;
+      }
+    }
+
+    const deposit = async (value) => {
+      const param = {
+        abi: stakingRewardsAbi,
+        address: stakingRewardsAddress,
+        functionName: 'deposit',
+        args: [0, ethers.parseEther(value)]
+      };
+      try {
+        const depositTx = await writeContractAsync(param);
+        console.log('Deposit transaction sent:', depositTx);
+        setHashDeposit(depositTx);  
+      } catch (err) {
+        console.log('err', err);
+        setIsButtonDisabled(false);      
+        throw err; 
+      }
+    }
+
+    useEffect(() => {
+      console.log("use effectcall callApprove:",callApprove);
+      if (callApprove) {
+        approve(inputValue.toString());
+        setCallApprove(false);
+      } 
+    }, [callApprove]);
+
+    useEffect(() => {
+      console.log("use effectcall callDeposit:",callDeposit);
+      if (callDeposit) {
+        deposit(inputValue.toString());
+        setCallDeposit(false);
+      } 
+    }, [callDeposit]);
+
+    useEffect(() => {
+      console.log("use effect isConfirmedApprove:",isConfirmedApprove);
+      if (isConfirmedApprove) {
+        setCallDeposit(true);
+      } 
+    }, [isConfirmedApprove]);
+
+    useEffect(() => {
+      console.log("inside the use effect isConfirmedDeposit:",isConfirmedDeposit);
+      if (isConfirmedDeposit) {
+        setIsButtonDisabled(false);
+        try{
+          notification.open({
+            message:  'Congratulations',
+            placement: 'top',
+            description: 'Staking success',
+            onClick: () => {},
+          });
+        } catch (e) {
+          console.error(e);
+        }      
+      } 
+    }, [isConfirmedDeposit]);
+
+ 
+
     const Stake = () => {
       const handleStakeClick = async () => {
-        console.log('begin');
         setIsButtonDisabled(true);
         try {
           await handleStake();
-          console.log('Stake completed');
         } catch (error) {
           console.error('Stake failed', error);
-        } finally{
-          setIsButtonDisabled(false);
-        } 
+          setIsButtonDisabled(false);   
+        }
       };
     
       const handleStake = async () => {
         const amountToStake = inputValue.toString();
-        console.log("amountToStake", amountToStake);
-        if(userAllowance < amountToStake){
-          try {
-            await ballapprove(amountToStake);
-            console.log('Approve completed');
-          } catch (error) {
-            console.error('Approve failed', error);
-          }
+        if(Number(userAllowance) < Number(amountToStake)){
+          setCallApprove(true);
+        }else{
+          setCallDeposit(true);
         }
-
-        try {
-          await deposit(amountToStake);
-          console.log('Deposit completed');
-        } catch (error) {
-          console.error('Deposit failed', error);
-        }
-        
       }; 
 
-      const ballapprove = async (value) => {
-        const param = {
-          abi: ballAbi,
-          address: ballAddress,
-          functionName: 'approve',
-          args: [stakingRewardsAddress, ethers.parseEther(value).toString()]
-        };
-        try {
-          let res = await writeContractAsync(param);
-          console.log('result', res);
-        } catch (err) {
-          console.log('err', err);
-          throw err;
-        }
-      }
-
-      const deposit = async (value) => {
-        const param = {
-          abi: stakingRewardsAbi,
-          address: stakingRewardsAddress,
-          functionName: 'deposit',
-          args: [0, ethers.parseEther(value)]
-        };
-        try {
-          let res = await writeContractAsync(param);
-          console.log('result', res);
-        } catch (err) {
-          console.log('err', err);
-          throw err; 
-        }
-      }
-
+      
       return (
         <button
           className={`center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg 
           ${isButtonDisabled ? 'cursor-not-allowed bg-slate-500 text-grey-200 disabled' : 'bg-blue-400 hover:bg-blue-600 text-white border'}`}
           onClick={handleStakeClick}
-          disabled={isButtonDisabled}
-        >
+          disabled={isButtonDisabled}>
           {userAllowance < inputValue ? "Approve & Stake" : "Stake"} 
         </button>
       );
@@ -145,7 +191,6 @@ const StakeCard =() => {
             </div>
         </>
     );
-
 }
 
 export default StakeCard;

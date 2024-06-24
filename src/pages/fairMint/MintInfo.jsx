@@ -27,7 +27,7 @@ const MintInfo = () => {
                 <div className="flex flex-col">
                     <div className='grid grid-cols-2 gap-6'>
                         <NumberItem title= 'My Points' num={myPoints}/>
-                        <NumberItem title= 'Mint Fee (ETH)' num={accountTotalMint}/>
+                        <NumberItem title= 'Mint Fee (GLMR)' num={accountTotalMint}/>
                         <NumberItem title= 'My Shares' num={`${myShare}%`}/>
                         <NumberItem title= 'Est. Claimable BALL' num={claimableBall}/>
                     </div>

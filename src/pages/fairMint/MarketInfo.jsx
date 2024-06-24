@@ -36,4 +36,4 @@ function NumberItem({title, num}) {
         </div>
       </>
     )
-  }
+}

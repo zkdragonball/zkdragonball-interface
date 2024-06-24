@@ -137,7 +137,7 @@ const MintCard =() => {
                         <div className="text-xs text-grey-400 mt-1 justify-between flex flex-col mb-3 mx-3">
                             <div className="flex flex-row items-center space-x-1">
                                 <span>Available to Mint: </span>
-                                <span className="font-mono">{ethBalance} ETH</span>
+                                <span className="font-mono">{ethBalance} GLMR</span>
                             </div>
                         </div>
                     </div>

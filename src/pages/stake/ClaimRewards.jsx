@@ -1,23 +1,32 @@
 import { useStakingRewards} from '../../state/useStakingRewards'
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useAccount,useWriteContract} from "wagmi";
 import { stakingRewardsAbi, stakingRewardsAddress} from '../../abiConfig';
 import { ethers } from 'ethers';
-import {useWeb3Modal} from "@web3modal/wagmi/react";
 
+const ClaimRewards = () => {
+    const { pending,setRefresh} = useStakingRewards();
+    const { address} = useAccount();
+    const { writeContractAsync } = useWriteContract()  
+    const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
 
-const StakeInfo = () => {
-    const {myStake, stakeSupply, pending, apr} = useStakingRewards();
-    const {address} = useAccount();
-    const {writeContractAsync} = useWriteContract()  
-    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    useEffect(() => {
+        setIsButtonDisabled(pending < 1);
+    }, [pending]);
 
+    useEffect(() => {
+        const updateRefresh = () => {
+            setRefresh(prevRefresh => !prevRefresh);
+        };    
+        const intervalId = setInterval(updateRefresh, 3000); 
+        return () => clearInterval(intervalId);
+    }, []);
 
     const Claim = () => {
         const handleClaimClick = async () => {
             setIsButtonDisabled(true);
             try {
-                await handleClaim(pending.toString());
+                await handleClaim();
                 console.log('Claim completed');
             } catch (error) {
                 console.error('Claim failed', error);
@@ -26,22 +35,21 @@ const StakeInfo = () => {
             } 
         };
         
-        const handleClaim = async(value) => {
+        const handleClaim = async() => {
             try {
-                console.log("1",value);
-                await withdraw(value);
+                await withdraw();
                 console.log('Withdraw completed');
             } catch (error) {
                 console.error('Withdraw failed', error);
             }
         }; 
 
-        const withdraw = async(value) => {
+        const withdraw = async() => {
             const param = {
             abi: stakingRewardsAbi,
             address: stakingRewardsAddress,
             functionName: 'withdraw',
-            args: [0, ethers.parseEther(value)]
+            args: [0, 0]
             };
             try {
                 const res = await writeContractAsync(param);
@@ -64,26 +72,17 @@ const StakeInfo = () => {
         );
     }; 
 
-    const Unconnect =() => {
-        const {open} = useWeb3Modal()
-        return (
-            <button className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-400 hover:bg-blue-600 text-white disabled:bg-grey-100 disabled:text-grey-200 border"
-                onClick={() => open()}>Connect Wallet
-            </button>
-        );
-    }
-
     return(
         <>
             <div className="w-full p-4 space-y-6 rounded-2xl border border-black-200 shadow bg-white">
                 <div className="flex flex-col pt-1 text-2xl lilita-one-regular leading-8 text-orange-500">
-                    My Rewards
+                    Rewards
                 </div>
-                <div className="mt-10 text-5xl lilita-one-regular leading-8 text-black flex justify-center ">
-                        {pending}
+                <div className="mt-10 text-5xl lilita-one-regular leading-8 text-orange-500 flex justify-center ">
+                    {pending}
                 </div>
                 <div className="flex flex-col pt-4">
-                    {!address ? <Unconnect/> : <Claim/>}
+                    {!address ? null : <Claim/>}
                 </div>
 
             </div> 
@@ -91,21 +90,4 @@ const StakeInfo = () => {
     );
 
 }
-export default StakeInfo;
-
-function NumberItem({title, num}) {
-    return (
-      <>
-        <div className='flex flex-col space-y-1'>
-            <div className='flex flex-row items-center w-full'>
-                <div className='text-grey-400 text-xs mr-1 sm:mr-0'>
-                    {title}
-                </div>
-            </div>    
-            <div className='text-sm text-black'>
-                {num}
-            </div>
-        </div>
-      </>
-    )
-}
+export default ClaimRewards;

@@ -2,8 +2,10 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from './pages/home'
 import ErrorPage from "./pages/error/errorPage";
 import FairMint from "./pages/fairMint";
-import Bridge from "./pages/bridge";
 import Stake from "./pages/stake";
+import Airdrop from "./pages/airdrop";
+import Treasury from "./pages/treasury";
+
 
 
 const router = createBrowserRouter([
@@ -17,12 +19,16 @@ const router = createBrowserRouter([
         element: <FairMint/>
     },
     {
-        path: "/bridge",
-        element: <Bridge/>
-    },
-    {
         path: "/stake",
         element: <Stake/>
-     }
+     },
+    //  {
+    //     path: "/treasury",
+    //     element: <Treasury/>
+    // },
+    {
+        path: "/airdrop",
+        element: <Airdrop/>
+    },
 ]);
 export default router;

@@ -3,18 +3,13 @@
     "inputs": [
       {
         "internalType": "contract IERC20",
-        "name": "_erc20",
+        "name": "_lpToken",
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "_rewardPerBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_startBlock",
-        "type": "uint256"
+        "internalType": "contract IRewarder",
+        "name": "_rewarder",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -117,19 +112,14 @@
   {
     "inputs": [
       {
-        "internalType": "uint256",
-        "name": "_allocPoint",
-        "type": "uint256"
-      },
-      {
         "internalType": "contract IERC20",
         "name": "_lpToken",
         "type": "address"
       },
       {
-        "internalType": "bool",
-        "name": "_withUpdate",
-        "type": "bool"
+        "internalType": "contract IRewarder",
+        "name": "_rewarder",
+        "type": "address"
       }
     ],
     "name": "add",
@@ -194,71 +184,12 @@
   },
   {
     "inputs": [],
-    "name": "endBlock",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "erc20",
-    "outputs": [
-      {
-        "internalType": "contract IERC20",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
-    ],
-    "name": "fund",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "massUpdatePools",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
     "outputs": [
       {
         "internalType": "address",
         "name": "",
         "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "paidOut",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -304,19 +235,9 @@
         "type": "address"
       },
       {
-        "internalType": "uint256",
-        "name": "allocPoint",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "lastRewardBlock",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "accERC20PerShare",
-        "type": "uint256"
+        "internalType": "contract IRewarder",
+        "name": "rewarder",
+        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -343,83 +264,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "rewardPerBlock",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "rewardsSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "uint256",
         "name": "_pid",
         "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_allocPoint",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bool",
-        "name": "_withUpdate",
-        "type": "bool"
       }
     ],
-    "name": "set",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "stakeSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "startBlock",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "totalAllocPoint",
+    "name": "tokenPerBlock",
     "outputs": [
       {
         "internalType": "uint256",
@@ -449,22 +301,14 @@
         "internalType": "uint256",
         "name": "_pid",
         "type": "uint256"
-      }
-    ],
-    "name": "updatePool",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
+      },
       {
-        "internalType": "uint256",
-        "name": "_newRewardPerBlock",
-        "type": "uint256"
+        "internalType": "contract IRewarder",
+        "name": "_rewarder",
+        "type": "address"
       }
     ],
-    "name": "updateRewardPerBlock",
+    "name": "updateRewarder",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -487,11 +331,6 @@
       {
         "internalType": "uint256",
         "name": "amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "rewardDebt",
         "type": "uint256"
       }
     ],
