@@ -96,16 +96,8 @@ const AirdropCard =({phase}) => {
       }  
     };
   
-    const handleClaim = async() => {
-      try {
-          await claim();
-      } catch (error) {
-          console.error('claim failed', error);
-          setIsButtonDisabled(false);
-      }
-    }; 
 
-    const claim = async() => {
+    const handleClaim = async() => {
       const param = {
         abi: airDrop1Abi,
         address: airdrop1Address,

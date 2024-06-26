@@ -1,18 +1,37 @@
+import { notification} from 'antd';
 import { useStakingRewards} from '../../state/useStakingRewards'
 import { useState,useEffect } from "react";
-import { useAccount,useWriteContract} from "wagmi";
+import { useAccount,useWriteContract,useWaitForTransactionReceipt} from "wagmi";
 import { stakingRewardsAbi, stakingRewardsAddress} from '../../abiConfig';
-import { ethers } from 'ethers';
 
 const ClaimRewards = () => {
     const { pending,setRefresh} = useStakingRewards();
     const { address} = useAccount();
     const { writeContractAsync } = useWriteContract();  
     const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
+    const [ hashClaim, setHashClaim] = useState('');
+
+    const {isSuccess: isConfirmedClaim } =
+        useWaitForTransactionReceipt({
+        hash: hashClaim,
+    });
 
     useEffect(() => {
-        setIsButtonDisabled(pending < 1);
-    }, [pending]);
+        console.log("inside the use effect isConfirmedClaim:",isConfirmedClaim);
+        if (isConfirmedClaim) {
+          setIsButtonDisabled(false);
+          try{
+            notification.open({
+              message:  'Congratulations',
+              placement: 'top',
+              description: 'Claim staking rewards success',
+              onClick: () => {},
+            });
+          } catch (e) {
+            console.error(e);
+          }      
+        } 
+      }, [isConfirmedClaim]);
 
     useEffect(() => {
         const updateRefresh = () => {
@@ -27,24 +46,14 @@ const ClaimRewards = () => {
             setIsButtonDisabled(true);
             try {
                 await handleClaim();
-                console.log('Claim completed');
             } catch (error) {
                 console.error('Claim failed', error);
-            } finally{
                 setIsButtonDisabled(false);
             } 
         };
-        
-        const handleClaim = async() => {
-            try {
-                await withdraw();
-                console.log('Withdraw completed');
-            } catch (error) {
-                console.error('Withdraw failed', error);
-            }
-        }; 
+         
 
-        const withdraw = async() => {
+        const handleClaim = async() => {
             const param = {
             abi: stakingRewardsAbi,
             address: stakingRewardsAddress,
@@ -52,8 +61,9 @@ const ClaimRewards = () => {
             args: [0, 0]
             };
             try {
-                const res = await writeContractAsync(param);
-                console.log('result', res);
+                const claimTx = await writeContractAsync(param);
+                console.log('Claim transaction sent:', claimTx);
+                setHashClaim(claimTx);  
             } catch (err) {
                 console.log('err', err);
                 throw err; 
@@ -61,14 +71,19 @@ const ClaimRewards = () => {
         }
 
         return (
-            <button
-            className={`center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg 
-            ${isButtonDisabled ? 'cursor-not-allowed bg-slate-500 text-grey-200 disabled' : 'bg-blue-400 hover:bg-blue-600 text-white border'}`}
-            onClick={handleClaimClick}
-            disabled={isButtonDisabled}
-            >
-            Claim
-            </button>
+        <>
+            {pending > 0 ? (
+                <button
+                className={`center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg 
+                ${isButtonDisabled ? 'cursor-not-allowed bg-slate-500 text-grey-200 disabled' : 'bg-blue-400 hover:bg-blue-600 text-white border'}`}
+                onClick={handleClaimClick}
+                disabled={isButtonDisabled}
+                >
+                Claim
+                </button>
+            ) : null
+            }
+        </>
         );
     }; 
 
