@@ -3,15 +3,17 @@ import {airDrop1Abi, airdrop1Address} from '../abiConfig'
 import {useAccount, useReadContract, useWriteContract} from 'wagmi'
 import * as util from '../utils/time'
 import {airdrop_1} from "../utils/airdrop";
+import { ethers,keccak256 } from 'ethers';
+import { MerkleTree } from "merkletreejs";
 
 
 export function useAirDropTime(phase) {
 
-  const useAbi = () => {
+  const getAbi = () => {
     return phase === '1' ? airDrop1Abi : null;
   };
 
-  const useAddress = () => {
+  const getAddress = () => {
     return phase === '1' ? airdrop1Address : null;
   };
 
@@ -19,8 +21,8 @@ export function useAirDropTime(phase) {
   const [endTime, setEndTime] = useState(0)
   
   const startTimeRes = useReadContract({
-    abi: useAbi(),
-    address: useAddress(),
+    abi: getAbi(),
+    address: getAddress(),
     functionName: 'startTime'
   })
   useEffect(() => {
@@ -32,8 +34,8 @@ export function useAirDropTime(phase) {
   }, [startTimeRes]);
 
   const endTimeRes = useReadContract({
-    abi: useAbi(),
-    address: useAddress(),
+    abi: getAbi(),
+    address: getAddress(),
     functionName: 'endTime'
   })
 
@@ -51,42 +53,77 @@ export function useAirDropTime(phase) {
 export function useAirDrop(phase) {
   const {address} = useAccount();
   const [amount, setAmount] = useState(0);
+  const [proof, setProof] = useState(0);
   const [isClaimed, setIsClaimed] = useState(false);
+  const elements = airdrop_1.map((x) => ethers.solidityPackedKeccak256(["address", "uint256"], [x.address, x.amount]));
 
-  const useAbi = () => {
+  const getAbi = () => {
     return phase === '1' ? airDrop1Abi : null;
   };
 
-  const useAddress = () => {
+  const getAddress = () => {
     return phase === '1' ? airdrop1Address : null;
   };
 
-  const { status, data: claimState } = useReadContract({
-    abi: useAbi(),
-    address: useAddress(),
-    functionName: 'claimed',
-    args: [address],
-  });
+  const merkleTree = () => {
+    return new MerkleTree(elements, keccak256, { sort: true });
+  }
+
+  function findIndexByAddress(addressToFind) {
+    for (let i = 0; i < airdrop_1.length; i++) {
+        if (airdrop_1[i].address === addressToFind) {
+            return i;
+        }
+    }
+    return -1; 
+}
+
+  const getProof = (addr) => {
+    const index = findIndexByAddress(addr);
+    const leaf =  elements[index];
+    const tree = merkleTree();
+    return tree.getHexProof(leaf); 
+  }
+
 
   useEffect(() => {
     if (address) {
       let list = airdrop_1.filter(item => item.address === address);
       if (list.length > 0) {
         setAmount(list[0].amount);
+      }else{
+        setAmount(0);
+        setIsClaimed(false);
       }
     }
   }, [address]);
 
   useEffect(() => {
-    if (status === 'success') {
-      setIsClaimed(claimState);
+    if (address) {
+      let list = airdrop_1.filter(item => item.address === address);
+      if (list.length > 0) {
+        setProof(getProof(list[0].address));
+      }
     }
-  }, [status, claimState]);
+  }, [address]);
+
+
+  const claimState = useReadContract({
+    abi: getAbi(),
+    address: getAddress(),
+    functionName: 'claimed',
+    args: [address],
+  })
+  useEffect(() => {
+    if (claimState.status === 'success') {
+      setIsClaimed(claimState.data);
+    }
+  }, [claimState,address]);
 
   if (!address) {
     return [0, false];
   }
 
-  return [amount, isClaimed];
+  return {amount, isClaimed,proof};
 }
 

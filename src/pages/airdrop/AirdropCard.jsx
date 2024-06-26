@@ -1,25 +1,61 @@
 import { useState,useEffect
  } from 'react';
+import { notification} from 'antd';
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import { useAirDrop,useAirDropTime } from '../../state/airdrop';
-import { useAccount,writeContractAsync} from "wagmi";
+import { useAccount,useWriteContract,useWaitForTransactionReceipt} from "wagmi";
 import { airDrop1Abi, airdrop1Address} from '../../abiConfig';
 
 
 const AirdropCard =({phase}) => {
   const {address} = useAccount();
+  const { writeContractAsync } = useWriteContract();  
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  const [ amount, isClaimed] = useAirDrop(phase);
+  const {amount, isClaimed, proof}  = useAirDrop(phase);
   const [startTime, endTime] = useAirDropTime(phase);
-
+  const [hashClaim, setHashClaim] = useState('');
   const [timeLeft, setTimeLeft] = useState(0);
   const currentTime = new Date().getTime(); 
   const { days, hours, minutes, seconds } = timeLeft;
 
+  const {isSuccess: isConfirmedClaim } =
+    useWaitForTransactionReceipt({
+    hash: hashClaim,
+  });
+
+  useEffect(() => {
+    console.log("inside the use effect isConfirmedClaim:",isConfirmedClaim);
+    if (isConfirmedClaim) {
+      try{
+        notification.open({
+          message:  'Congratulations',
+          placement: 'top',
+          description: 'claim airdrop success',
+          onClick: () => {},
+        });
+      } catch (e) {
+        console.error(e);
+      }      
+    } 
+  }, [isConfirmedClaim]);
+
+  useEffect(() => {
+    if(endTime !=0){
+      if(amount ===0){
+        setIsButtonDisabled(true)
+      }else{
+        if(isClaimed){
+          setIsButtonDisabled(true)
+        }else{
+          setIsButtonDisabled(false)
+        }
+      }
+    }  
+  }, [address,endTime,amount]);
+
   useEffect(() => {
     const calculateTimeLeft = () => {
       if(endTime !=0){
-        amount ===0 ? setIsButtonDisabled(true): null;
         let timeDifference = endTime - currentTime;
         if (timeDifference > 0) {
           let seconds = Math.floor((timeDifference / 1000) % 60);
@@ -39,7 +75,7 @@ const AirdropCard =({phase}) => {
     const timer = setInterval(calculateTimeLeft, 1000);
     calculateTimeLeft();
     return () => clearInterval(timer);
-  }, [currentTime,address]); 
+  }, [currentTime]); 
   
   const Unconnect =() => {
     const {open} = useWeb3Modal()
@@ -54,33 +90,33 @@ const AirdropCard =({phase}) => {
       setIsButtonDisabled(true);
       try {
           await handleClaim();
-          console.log('Claim completed');
       } catch (error) {
           console.error('Claim failed', error);
-      } finally{
           setIsButtonDisabled(false);
-      } 
+      }  
     };
   
     const handleClaim = async() => {
       try {
           await claim();
-          console.log('claim completed');
       } catch (error) {
           console.error('claim failed', error);
+          setIsButtonDisabled(false);
       }
     }; 
 
     const claim = async() => {
       const param = {
-      abi: airDrop1Abi,
-      address: airdrop1Address,
-      functionName: 'claim',
-      args: [{amount}, 0]
+        abi: airDrop1Abi,
+        address: airdrop1Address,
+        functionName: 'claim',
+        args: [address,amount, proof]
       };
+      console.log('param',param);
       try {
-          const res = await writeContractAsync(param);
-          console.log('result', res);
+          const claimTx = await writeContractAsync(param);
+          console.log('claim transaction sent:', claimTx);
+          setHashClaim(claimTx); 
       } catch (err) {
           console.log('err', err);
           throw err; 

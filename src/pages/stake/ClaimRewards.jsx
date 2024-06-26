@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 const ClaimRewards = () => {
     const { pending,setRefresh} = useStakingRewards();
     const { address} = useAccount();
-    const { writeContractAsync } = useWriteContract()  
+    const { writeContractAsync } = useWriteContract();  
     const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
 
     useEffect(() => {

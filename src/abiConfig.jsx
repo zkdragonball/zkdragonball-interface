@@ -4,7 +4,7 @@ import ballAbiFile from './abi/ball.json'
 import stakingRewardsAbiFile from './abi/stakingRewards.json'
 
 
-export const airdrop1Address = '0xd40DB45c0c1912405d2eED23342252EA8Eb28BC1';
+export const airdrop1Address = '0x699F7171C6E977C462510C6262F8d1169124CF02';
 export const airDrop1Abi = airDropAbiFile
 
 
