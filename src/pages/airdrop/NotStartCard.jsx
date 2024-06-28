@@ -3,7 +3,7 @@ import { useAirDrop,useAirDropTime } from '../../state/airdrop';
 
 
 const NotStartCard =({phase}) => {
-  const [amount] = useAirDrop(phase);
+  const {amount} = useAirDrop(phase);
   const [startTime] = useAirDropTime(phase);
   const [timeLeft, setTimeLeft] = useState(0);
   const currentTime = new Date().getTime(); 

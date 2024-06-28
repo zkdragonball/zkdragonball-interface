@@ -2,8 +2,7 @@ import { useAirDrop } from '../../state/airdrop';
 
 
 const EndCard =({phase}) => {
-  const [amount,isClaimed] = useAirDrop(phase);
-  console.log({phase});
+  const {amount,isClaimed} = useAirDrop(phase);
   return(
     <>
       <div className="w-full p-4 space-y-2 rounded-2xl border border-black-200 shadow bg-white mt-2">
