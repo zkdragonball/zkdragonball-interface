@@ -18,17 +18,13 @@ const router = createBrowserRouter([
         path: "/fairMint",
         element: <FairMint/>
     },
-    {
-        path: "/stake",
-        element: <Stake/>
-     },
-    //  {
-    //     path: "/treasury",
-    //     element: <Treasury/>
+    // {
+    //     path: "/stake",
+    //     element: <Stake/>
+    //  },
+    // {
+    //     path: "/airdrop",
+    //     element: <Airdrop/>
     // },
-    {
-        path: "/airdrop",
-        element: <Airdrop/>
-    },
 ]);
 export default router;

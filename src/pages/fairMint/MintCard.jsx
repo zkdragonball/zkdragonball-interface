@@ -118,12 +118,12 @@ const MintCard =() => {
                             <input className="flex-grow w-full p-2 text-2xl font-mono  font-extralight border-none rounded-lg outline-none
                             placeholder-grey-100 bg-transparent" 
                             autoCorrect="off" inputMode="decimal"  maxLength="79" minLength="1" pattern="[0-9,.]*" 
-                            placeholder="0.001" type="text" value={inputValue} 
+                            placeholder="100" type="text" value={inputValue} 
                             onChange={(e) =>  setInputValue(e.target.value)}
                             onBlur={(e) => {
                               const newValue = parseFloat(e.target.value);
-                              if (isNaN(newValue) || newValue < 0.001) {
-                                  setInputValue('0.001');
+                              if (isNaN(newValue) || newValue < 100) {
+                                  setInputValue('100');
                               }
                               if (newValue > ethBalance){
                                 setInputValue(ethBalance);

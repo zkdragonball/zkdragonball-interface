@@ -43,9 +43,8 @@ const Footer = () => {
                         </p>
                         <nav className="flex flex-col mt-4 space-y-2 text-sm text-gray-500">
                             <Link to="/fairMint">ball</Link>
-                            <Link to="/stake">stake</Link>
-                            {/* <Link to="/treasury">treasury</Link> */}
-                            <Link to="/airdrop">airdrop</Link>
+                            {/* <Link to="/stake">stake</Link>
+                            <Link to="/airdrop">airdrop</Link> */}
                             
                         </nav>
                         </div>

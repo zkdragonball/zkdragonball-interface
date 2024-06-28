@@ -23,9 +23,8 @@ const Navbar = () => {
                 </div>
                 <ul className=' text-white lilita-one-regular leading-8 text-2xl md:flex hidden list-none flex-row justify-between items-center flex-initial'>
                     <li className='mx-4 cursor-pointer'><Link to="/fairMint">BALL</Link></li>
-                    <li className='mx-4 cursor-pointer'><Link to="/stake">STAKE</Link></li>
-                    {/* <li className='mx-4 cursor-pointer'><Link to="/treasury">TREASURY</Link></li> */}
-                    <li className='mx-4 cursor-pointer'><Link to="/airdrop">AIRDROP</Link></li>
+                    {/* <li className='mx-4 cursor-pointer'><Link to="/stake">STAKE</Link></li>
+                    <li className='mx-4 cursor-pointer'><Link to="/airdrop">AIRDROP</Link></li> */}
                 </ul>
             </div>
             <div className='flex'>
@@ -45,9 +44,8 @@ const Navbar = () => {
                                 <AiOutlineClose fontSize={28} onClick={() => setToggleMenu(false)}/>
                             </li>
                             <li className='mt-4 cursor-pointer'><Link to="/fairMint">BALL</Link></li>
-                            <li className='mt-4 cursor-pointer'><Link to="/Stake">STAKE</Link></li>
-                            {/* <li className='mt-4 cursor-pointer'><Link to="/treasury">TREASURY</Link></li> */}
-                            <li className='mt-4 cursor-pointer'><Link to="/airdrop">AIRDROP</Link></li>
+                            {/* <li className='mt-4 cursor-pointer'><Link to="/Stake">STAKE</Link></li>
+                            <li className='mt-4 cursor-pointer'><Link to="/airdrop">AIRDROP</Link></li> */}
                         </ul>
                     )}
                 </div>
