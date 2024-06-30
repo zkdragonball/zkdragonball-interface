@@ -31,7 +31,7 @@ const ClaimRewards = () => {
             console.error(e);
           }      
         } 
-      }, [isConfirmedClaim]);
+    }, [isConfirmedClaim]);
 
     useEffect(() => {
         const updateRefresh = () => {

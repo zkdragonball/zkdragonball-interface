@@ -1,8 +1,82 @@
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {useAccount} from "wagmi";
+import {useAccount,useWaitForTransactionReceipt} from "wagmi";
+import {mintwarAbi, mintwarAddress} from '../../abiConfig'
+import { useEffect, useState } from 'react';
+import {useFairMint} from '../../state/useFairMint'
 
 const MintEndCard =() => {
     const {address} = useAccount();
+    const { accountClaimableAmount} = useFairMint();
+    const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
+    const [ hashClaim, setHashClaim] = useState('');
+
+    const {isSuccess: isConfirmedClaim } =
+        useWaitForTransactionReceipt({
+        hash: hashClaim,
+    });
+    useEffect(() => {
+        console.log("inside the use effect isConfirmedClaim:",isConfirmedClaim);
+        if (isConfirmedClaim) {
+          setIsButtonDisabled(false);
+          try{
+            notification.open({
+              message:  'Congratulations',
+              placement: 'top',
+              description: 'Claim staking rewards success',
+              onClick: () => {},
+            });
+          } catch (e) {
+            console.error(e);
+          }      
+        } 
+    }, [isConfirmedClaim]);
+
+    const Claim = () => {
+        const handleClaimClick = async () => {
+            setIsButtonDisabled(true);
+            try {
+                await handleClaim();
+            } catch (error) {
+                console.error('Claim failed', error);
+                setIsButtonDisabled(false);
+            } 
+        };
+         
+    
+        const handleClaim = async() => {
+            const param = {
+            abi: mintwarAbi,
+            address: mintwarAddress,
+            functionName: 'claim',
+            args: [0, 0]
+            };
+            try {
+                const claimTx = await writeContractAsync(param);
+                console.log('Claim transaction sent:', claimTx);
+                setHashClaim(claimTx);  
+            } catch (err) {
+                console.log('err', err);
+                throw err; 
+            }
+        }
+    
+        return (
+        <>
+            {accountClaimableAmount > 0 ? (
+                <button
+                className={`center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg 
+                ${isButtonDisabled ? 'cursor-not-allowed bg-slate-500 text-grey-200 disabled' : 'bg-blue-400 hover:bg-blue-600 text-white border'}`}
+                onClick={handleClaimClick}
+                disabled={isButtonDisabled}
+                >
+                Claim
+                </button>
+            ) : null
+            }
+        </>
+        );
+    }; 
+    
     return(
         <>
             <div className="w-full p-4 space-y-2 rounded-2xl border border-black-200 shadow bg-white">
@@ -18,7 +92,7 @@ const MintEndCard =() => {
                     </div>
                 </div>
                 <div className="flex flex-col pt-4">
-                        {!address ? <Unconnect/> : <Swap/>}
+                        {!address ? <Unconnect/> : <Claim/>}
                 </div>
 
             </div> 
@@ -49,15 +123,8 @@ function InfoItem({title, value}) {
 }
 
 
-const Swap =() => {
-    return(
-        <button disabled="" className="center py-3 px-4 text-lg font-bold whitespace-nowrap rounded-lg disabled:cursor-not-allowed bg-blue-400 hover:bg-blue-600 text-white disabled:bg-grey-100 disabled:text-grey-200 border">
-            Swap
-        </button>
-    );
-  }
 
-  const Unconnect =() => {
+const Unconnect =() => {
     const {open} = useWeb3Modal()
     return (
         
@@ -65,6 +132,6 @@ const Swap =() => {
             onClick={() => open()}>Connect Wallet
         </button>
     );
-  }
+}
 
 

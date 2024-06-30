@@ -13,7 +13,7 @@ import Loading from "../../components/Loading";
 
 
 export default function FairMint() {
-  const {startTime, endTime, refresh, setRefresh} = useFairMint();
+  const {startTime, endTime} = useFairMint();
   const navigate = useNavigate();
   const [isRendered, setIsRendered] = useState(false);
   const [isLoading, setIsLoading] = useState(true); 
@@ -31,35 +31,7 @@ export default function FairMint() {
     }
   }, [startTime, navigate]);
 
-  useWatchContractEvent({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    eventName: 'Mint',
-    poll: true,
-    pollingInterval: 1500,
-    syncConnectedChain: true,
-    onLogs(logs) {
-      console.log('New logs!', logs)
-      if (logs.length === 0) return;
-      try{
-        const user = logs[0]["args"]["account"];
-        const isSuccess = logs[0]["args"]['success'];
-        if ( user === address ){
-          if (user === address) {
-            notification.open({
-              message: isSuccess ? 'Congratulations' : 'Unfortunately',
-              placement: 'top',
-              description: isSuccess ? 'Mint Success!!!' : 'Mint Failed!!!',
-              onClick: () => {},
-            });
-            setRefresh(!refresh);
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  })
+  
 
   return (
     <div>

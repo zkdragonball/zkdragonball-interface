@@ -11,7 +11,7 @@ export function useFairMint (){
 
     const {address} = useAccount();
     const [refresh, setRefresh] = useState(false);
-
+    //const currentBlock = useBlockNumber().data;
     const [startTime, setStartTime] = useState(0);
     const [endTime, setEndTime] = useState(0);
     const [myPoints, setMyPoints] = useState('0');
@@ -21,6 +21,7 @@ export function useFairMint (){
     const [totalSuccessMints, setTotalSuccessMints] = useState('0')
     const [totalFailValue, setTotalFailValue] = useState('0')
     const [totalSuccessValue, setTotalSuccessValue] = useState('0')
+    const [accountClaimableAmount, setAccountClaimableAmount] = useState('0')
 
    
     const startTimeRes = useReadContract({
@@ -134,15 +135,31 @@ export function useFairMint (){
     }
     }, [getTotalSuccessValue]);
 
+    const getAccountClaimableAmountRes = useReadContract({
+        abi: mintwarAbi,
+        address: mintwarAddress,
+        functionName: 'getAccountClaimableAmount'
+        })
+        useEffect(() => {
+        if (getAccountClaimableAmountRes.status === 'success') {
+            let res = new BigNumber(getAccountClaimableAmountRes.data).toString()
+            setAccountClaimableAmount(Number(ethers.formatEther(res)).toFixed(3))
+        }
+        }, [getAccountClaimableAmountRes]);
+
     useEffect(() => {
-        getMyPoints.refetch();
-        getAccountTotalMint.refetch();
-        getTotalPoints.refetch();
-        getTotalFailMints.refetch();
-        getTotalSuccessMints.refetch();
-        getTotalFailValue.refetch();
-        getTotalSuccessValue.refetch();
-    }, [refresh])
+        if (refresh) {
+            getMyPoints.refetch();
+            getAccountTotalMint.refetch();
+            getTotalPoints.refetch();
+            getTotalFailMints.refetch();
+            getTotalSuccessMints.refetch();
+            getTotalFailValue.refetch();
+            getTotalSuccessValue.refetch();
+            getAccountClaimableAmountRes.refetch();
+        }
+    }, [refresh]);
+
 
 
     return {
@@ -155,6 +172,7 @@ export function useFairMint (){
         totalSuccessMints,
         totalFailValue,
         totalSuccessValue,
+        accountClaimableAmount,
         setRefresh
     }
 
