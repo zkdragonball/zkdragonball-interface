@@ -35,7 +35,6 @@ const MintCard =() => {
     useEffect(() => {
       console.log("inside the use effect isConfirmedMint:",isConfirmedMint);
       if (isConfirmedMint) {
-        setIsButtonDisabled(false);
         const parsedLog = inter.parseLog(blockData.logs[0]);
         const isSuccess = parsedLog.args[1];
         try{
@@ -111,6 +110,8 @@ const MintCard =() => {
         } catch (err) {
           console.log('err', err);
           throw err; // 将错误抛出，以便在调用处捕获
+        }finally{
+          setIsButtonDisabled(false);
         }
       };    
       return (

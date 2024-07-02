@@ -1,14 +1,26 @@
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {useAccount,useWaitForTransactionReceipt} from "wagmi";
+import {useAccount,useWriteContract,useWaitForTransactionReceipt} from "wagmi";
 import {mintwarAbi, mintwarAddress} from '../../abiConfig'
 import { useEffect, useState } from 'react';
 import {useFairMint} from '../../state/useFairMint'
 
 const MintEndCard =() => {
     const {address} = useAccount();
-    const { accountClaimableAmount} = useFairMint();
+    const { accountClaimableAmount,isClaimed} = useFairMint();
     const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
     const [ hashClaim, setHashClaim] = useState('');
+    const {writeContractAsync} = useWriteContract()
+
+    console.log('isClaimed',isClaimed);
+
+    useEffect(() => {
+        if(isClaimed){
+            console.log('111');
+            setIsButtonDisabled(true);
+        }else{
+            setIsButtonDisabled(false);
+        }
+    }, [address,isClaimed]);
 
     const {isSuccess: isConfirmedClaim } =
         useWaitForTransactionReceipt({
@@ -47,8 +59,7 @@ const MintEndCard =() => {
             const param = {
             abi: mintwarAbi,
             address: mintwarAddress,
-            functionName: 'claim',
-            args: [0, 0]
+            functionName: 'claim'
             };
             try {
                 const claimTx = await writeContractAsync(param);
@@ -91,6 +102,23 @@ const MintEndCard =() => {
                         <InfoItem title= 'Mint Supply' value= '200 M' />
                     </div>
                 </div>
+                <>
+                { 
+                    !isClaimed ? 
+                    (
+                        <>
+                        <div className="flex flex-col items-center text-sm">
+                            You can receive {accountClaimableAmount} $BALL
+                        </div>
+                        </>
+                    ) : (
+                        <div className="flex flex-col items-center text-sm leading-8 text-orange-500">
+                        You have already claimed  {accountClaimableAmount} $BALL.
+                        </div>
+                    )
+
+                }
+                </>
                 <div className="flex flex-col pt-4">
                         {!address ? <Unconnect/> : <Claim/>}
                 </div>

@@ -12,6 +12,7 @@ export function useFairMint (){
     const {address} = useAccount();
     const [refresh, setRefresh] = useState(false);
     //const currentBlock = useBlockNumber().data;
+    const [isClaimed, setIsClaimed] = useState(false);
     const [startTime, setStartTime] = useState(0);
     const [endTime, setEndTime] = useState(0);
     const [myPoints, setMyPoints] = useState('0');
@@ -55,10 +56,10 @@ export function useFairMint (){
         args: [address]
     })
     useEffect(() => {
-    if (getMyPoints.status === 'success') {
-        let myPointsRes = new BigNumber(getMyPoints.data).toString()
-        setMyPoints(Number(ethers.formatEther(myPointsRes)).toFixed(3))
-    }
+        if (getMyPoints.status === 'success') {
+            let myPointsRes = new BigNumber(getMyPoints.data).toString()
+            setMyPoints(Number(ethers.formatEther(myPointsRes)).toFixed(3))
+        }
     }, [getMyPoints]); 
 
     const getAccountTotalMint = useReadContract({
@@ -69,64 +70,64 @@ export function useFairMint (){
     
     })
     useEffect(() => {
-    if (getAccountTotalMint.status === 'success') {
-        let myAccountTotalMint = new BigNumber(getAccountTotalMint.data).toString()
-        setAccountTotalMint(ethers.formatEther(myAccountTotalMint).toString())
-    }
-    }, [getAccountTotalMint]);
+        if (getAccountTotalMint.status === 'success') {
+            let myAccountTotalMint = new BigNumber(getAccountTotalMint.data).toString()
+            setAccountTotalMint(ethers.formatEther(myAccountTotalMint).toString())
+        }
+        }, [getAccountTotalMint]);
 
-    const getTotalPoints = useReadContract({
+        const getTotalPoints = useReadContract({
+            abi: mintwarAbi,
+            address: mintwarAddress,
+            functionName: 'totalPoints'
+    })
+    useEffect(() => {
+        if (getTotalPoints.status === 'success') {
+            let getTotalPointsRes = new BigNumber(getTotalPoints.data).toString()
+            setTotalPoints(Number(ethers.formatEther(getTotalPointsRes)).toFixed(3))
+        }
+        }, [getTotalPoints]);
+
+        const getTotalFailMints = useReadContract({
         abi: mintwarAbi,
         address: mintwarAddress,
-        functionName: 'totalPoints'
+        functionName: 'totalFailMints'
     })
     useEffect(() => {
-    if (getTotalPoints.status === 'success') {
-        let getTotalPointsRes = new BigNumber(getTotalPoints.data).toString()
-        setTotalPoints(Number(ethers.formatEther(getTotalPointsRes)).toFixed(3))
-    }
-    }, [getTotalPoints]);
+        if (getTotalFailMints.status === 'success') {
+            let res = new BigNumber(getTotalFailMints.data).toString()
+            setTotalFailMints(res.toString())
+        }
+        }, [getTotalFailMints]);
 
-    const getTotalFailMints = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalFailMints'
+        const getTotalSuccessMints = useReadContract({
+        abi: mintwarAbi,
+        address: mintwarAddress,
+        functionName: 'totalSuccessMints'
     })
     useEffect(() => {
-    if (getTotalFailMints.status === 'success') {
-        let res = new BigNumber(getTotalFailMints.data).toString()
-        setTotalFailMints(res.toString())
-    }
-    }, [getTotalFailMints]);
+        if (getTotalSuccessMints.status === 'success') {
+            let res = new BigNumber(getTotalSuccessMints.data).toString()
+            setTotalSuccessMints(res.toString())
+        }
+        }, [getTotalSuccessMints]);
 
-    const getTotalSuccessMints = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalSuccessMints'
+        const getTotalFailValue = useReadContract({
+        abi: mintwarAbi,
+        address: mintwarAddress,
+        functionName: 'totalFailValue'
     })
     useEffect(() => {
-    if (getTotalSuccessMints.status === 'success') {
-        let res = new BigNumber(getTotalSuccessMints.data).toString()
-        setTotalSuccessMints(res.toString())
-    }
-    }, [getTotalSuccessMints]);
+        if (getTotalFailValue.status === 'success') {
+            let res = new BigNumber(getTotalFailValue.data).toString()
+            setTotalFailValue(Number(ethers.formatEther(res)).toFixed(3))
+        }
+        }, [getTotalFailValue]);
 
-    const getTotalFailValue = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalFailValue'
-    })
-    useEffect(() => {
-    if (getTotalFailValue.status === 'success') {
-        let res = new BigNumber(getTotalFailValue.data).toString()
-        setTotalFailValue(Number(ethers.formatEther(res)).toFixed(3))
-    }
-    }, [getTotalFailValue]);
-
-    const getTotalSuccessValue = useReadContract({
-    abi: mintwarAbi,
-    address: mintwarAddress,
-    functionName: 'totalSuccessValue'
+        const getTotalSuccessValue = useReadContract({
+        abi: mintwarAbi,
+        address: mintwarAddress,
+        functionName: 'totalSuccessValue'
     })
     useEffect(() => {
     if (getTotalSuccessValue.status === 'success') {
@@ -138,14 +139,28 @@ export function useFairMint (){
     const getAccountClaimableAmountRes = useReadContract({
         abi: mintwarAbi,
         address: mintwarAddress,
-        functionName: 'getAccountClaimableAmount'
-        })
-        useEffect(() => {
+        functionName: 'getAccountClaimableAmount',
+        args: [address]
+    })
+    useEffect(() => {
         if (getAccountClaimableAmountRes.status === 'success') {
-            let res = new BigNumber(getAccountClaimableAmountRes.data).toString()
+            let res = getAccountClaimableAmountRes.data;
             setAccountClaimableAmount(Number(ethers.formatEther(res)).toFixed(3))
         }
-        }, [getAccountClaimableAmountRes]);
+    }, [getAccountClaimableAmountRes]);
+
+    const claimState = useReadContract({
+        abi: mintwarAbi,
+        address: mintwarAddress,
+        functionName: 'isClaimed',
+        args: [address],
+      })
+    useEffect(() => {
+        if (claimState.status === 'success') {
+            setIsClaimed(claimState.data);
+        }
+    }, [claimState,address]);
+
 
     useEffect(() => {
         if (refresh) {
@@ -157,10 +172,9 @@ export function useFairMint (){
             getTotalFailValue.refetch();
             getTotalSuccessValue.refetch();
             getAccountClaimableAmountRes.refetch();
+            claimState.refetch();
         }
     }, [refresh]);
-
-
 
     return {
         startTime,
@@ -173,6 +187,7 @@ export function useFairMint (){
         totalFailValue,
         totalSuccessValue,
         accountClaimableAmount,
+        isClaimed,
         setRefresh
     }
 
