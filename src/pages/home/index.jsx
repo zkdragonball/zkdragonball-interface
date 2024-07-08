@@ -13,7 +13,7 @@ const Home = () => {
     return (
         <>
             <div>
-                <div className='h-full bg-gradient-to-b  from-blue-300 to-green-200'>
+                <div className=' h-full bg-gradient-to-b  from-blue-300 to-green-200'>
                     <div className="bg-no-repeat bg-center bg-cover" style={{backgroundImage: `url(${bgImg})`,
                     height: '710px', width: '100%' }}>
                     <Navbar />
@@ -22,14 +22,17 @@ const Home = () => {
                     <div style={{ height: '800px', width: '100%' }}>
                     <About/>
                     </div>
-                    <div style={{ height: '780px', width: '100%' }}>
+                    <div className='h-[650px] md:h-[400px]'>
                     <Tokenomics/>
                     </div>
-                    <div style={{ height: '710px', width: '100%' }}>
+                    <div className='h-[650px] md:h-[450px]'>
                     <Nft/>
                     </div>
+                    <div className='mt-6'>
                     <Partner/>
                     <Footer/>
+                    </div>
+                    
                 </div>
             </div> 
         </>
