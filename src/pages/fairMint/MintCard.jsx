@@ -1,19 +1,55 @@
 import { Slider, ConfigProvider,notification} from 'antd';
 import { useEffect, useState } from 'react';
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import {useAccount,useBalance,useWriteContract} from "wagmi";
+import {useAccount,useBalance,useWriteContract,useWaitForTransactionReceipt} from "wagmi";
 import { ethers } from 'ethers';
 import {mintwarAbi, mintwarAddress} from '../../abiConfig'
-
+import {useFairMint} from '../../state/useFairMint'
 
 
 const MintCard =() => {
     const {address} = useAccount();
+    const {setRefresh} = useFairMint();
+
     const {writeContractAsync} = useWriteContract()
     const [ethBalance, setEthBalance] = useState('');
     const [chosenRatio, setChosenRatio] = useState(100)
     const balance = useBalance({address: address}).data;
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [ hashMint, setHashMint] = useState('');
+    const inter = new ethers.Interface(mintwarAbi);
+
+    const {isSuccess: isConfirmedMint, data: blockData } =
+      useWaitForTransactionReceipt({
+      hash: hashMint,
+    });
+
+    useEffect(() => {
+      const updateRefresh = () => {
+          setRefresh(prevRefresh => !prevRefresh);
+      };    
+      const intervalId = setInterval(updateRefresh, 3000); 
+      return () => clearInterval(intervalId);
+    }, []);
+  
+    useEffect(() => {
+      console.log("inside the use effect isConfirmedMint:",isConfirmedMint);
+      if (isConfirmedMint) {
+        const parsedLog = inter.parseLog(blockData.logs[0]);
+        const isSuccess = parsedLog.args[1];
+        try{
+          notification.open({
+            message: isSuccess ? 'Congratulations' : 'Unfortunately',
+            placement: 'top',
+            description: isSuccess ? 'Mint Success!!!' : 'Mint Failed!!!',
+            onClick: () => {},
+          });
+        } catch (e) {
+          console.error(e);
+        }      
+      }
+  }, [isConfirmedMint]);
+
     useEffect(()=>{
       if(balance){
         setEthBalance(Number(ethers.formatEther(balance.value.toString())).toFixed(3));
@@ -51,14 +87,10 @@ const MintCard =() => {
   
     const Mint = () => {
       const handleMintClick = async () => {
-        console.log('begin');
         setIsButtonDisabled(true);
         try {
           await handleMint();
-          console.log('Minting completed');
         } catch (error) {
-          console.error('Minting failed', error);
-        } finally{
           setIsButtonDisabled(false);
         } 
       };
@@ -70,15 +102,16 @@ const MintCard =() => {
           functionName: 'mint',
           args: [Number((chosenRatio * 0.01 * 100000).toFixed(0))],
           value: ethers.parseEther(inputValue.toString()),
-        };
-        console.log('param', param);
-    
+        };    
         try {
-          let res = await writeContractAsync(param);
-          console.log('结果', res);
+          const mintTx = await writeContractAsync(param);
+          console.log('Mint transaction sent:', mintTx);
+          setHashMint(mintTx); 
         } catch (err) {
           console.log('err', err);
           throw err; // 将错误抛出，以便在调用处捕获
+        }finally{
+          setIsButtonDisabled(false);
         }
       };    
       return (

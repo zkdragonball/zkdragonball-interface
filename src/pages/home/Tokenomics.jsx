@@ -3,7 +3,7 @@ const Tokenomics = () => {
     return (
         <>
             {/* <div className="w-full h-full py-15 flex flex-col bg-gradient-to-b  from-orange-50 to-orange-100"> */}
-            <div className="w-full h-full flex flex-col items-center lg:mt-60 space-y-10">
+            <div className="w-full h-full flex flex-col items-center md:mt-10 space-y-10">
                 <div className="mx-auto flex items-center mt-12">
                     <h1 className="text-center text-4xl lilita-one-regular leading-8 text-orange-500">TOKENOMICS</h1>
                 </div>
@@ -12,7 +12,7 @@ const Tokenomics = () => {
                 </div>
                 <div className="md:w-3/4 lg:px-20 xl:px-40 flex flex-col md:flex-row ">
                     <div className='md:w-1/2 w-full flex items-center justify-center' >
-                        <img src={bg1} alt="bg" className="h-[300px] md:h-[450px]"/>
+                        <img src={bg1} alt="bg" className="h-[180px] md:h-[230px] border-2 border-white rounded-lg shadow-md"/>
                     </div>
                     <div className='md:w-1/2 w-full mt-5 mb-10 flex items-center justify-center'>
                         <dl className="grid grid-cols-1 gap-x-8 gap-y-3  lg:grid-cols-1 text-gray-700 text-xl md:text-2xl lilita-one-regular leading-8">

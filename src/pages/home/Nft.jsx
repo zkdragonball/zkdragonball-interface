@@ -31,12 +31,13 @@ const Carousel = () => {
     return (
       <div className='flex flex-col md:flex-row items-center justify-center md:w-4/5 mx-auto'>
         <div className="mx-auto md:w-3/4 md:py-10">
-            <h1 className="text-center text-4xl lilita-one-regular leading-8 text-orange-500">ZKDragonball NFT</h1>
+            <h1 className="text-center text-4xl lilita-one-regular leading-8 text-orange-500"> NFT</h1>
             <div className="mt-10 w-full flex max-w-lg flex-col gap-y-2 px-5 md:px-0 mx-auto">
                 <dt className="text-xl lilita-one-regular leading-8 text-gray-700 text-center md:text-left">
-                ZKDragonball NFT is a Dragon Ball-themed NFT collection created by the community. We have gathered classic characters from Dragon Ball and utilized blockchain features to create more novel and interesting gameplay.               </dt>
+                Based on artificial intelligence and blockchain technology, we have forged a unique collection of NFT artworks. Focusing on classic characters from Dragon Ball, these pieces leverage the innovative features of blockchain to offer unprecedented interactive experiences and gameplay. 
+                </dt>
                 <dt className='text-xl lilita-one-regular leading-8 text-gray-700 mt-5 text-center md:text-left'>
-                NFTs are not only exquisite artworks but also unlock the following exclusive membership benefits.
+                Explore the new possibilities of NFTs and discover the limitless potential of art and technology.
                 </dt>
             </div>
         </div>
@@ -45,7 +46,7 @@ const Carousel = () => {
           <Slider {...settings}>
             {images.map((img, index) => (
               <div key={index} className='flex items-center justify-center'>
-                <img src={img} alt={`Image ${index + 1}`}  className="h-[200px] md:h-[450px]"/>
+                <img src={img} alt={`Image ${index + 1}`}  className="h-[200px] w-[160px] md:w-[260px] md:h-[300px] border-2 border-white rounded-lg shadow-md"/>
                 <p className=" mt-5 text-center text-xl lilita-one-regular leading-8 text-black">{descriptions[index]}</p>
               </div>
             ))}

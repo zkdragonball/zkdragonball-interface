@@ -19,7 +19,6 @@ const ClaimRewards = () => {
     useEffect(() => {
         console.log("inside the use effect isConfirmedClaim:",isConfirmedClaim);
         if (isConfirmedClaim) {
-          setIsButtonDisabled(false);
           try{
             notification.open({
               message:  'Congratulations',
@@ -31,7 +30,7 @@ const ClaimRewards = () => {
             console.error(e);
           }      
         } 
-      }, [isConfirmedClaim]);
+    }, [isConfirmedClaim]);
 
     useEffect(() => {
         const updateRefresh = () => {
@@ -67,6 +66,8 @@ const ClaimRewards = () => {
             } catch (err) {
                 console.log('err', err);
                 throw err; 
+            }finally{
+                setIsButtonDisabled(false);
             }
         }
 
